@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game State</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/game_actions.js') }}"></script>
+</head>
+<body>
+    <h2>Game State: {{ state }}</h2>
+    <h3>Your Hand</h3>
+    <section id="hand">
+        {% for card in hand %}
+            <div class="card" data-card="{{ card }}">{{ card }}</div>
+        {% endfor %}
+        <div>
+            <button class="draw_cards_button">Draw Cards</button>
+        </div>
+    </section>
+    <h3>Piles</h3>
+    <section id="piles">
+        <div class="pile" data-pile="pile1">{{ pile_values[0] }}</div>
+        <div class="pile" data-pile="pile2">{{ pile_values[1] }}</div>
+        <div class="pile" data-pile="pile3">{{ pile_values[2] }}</div>
+        <div class="pile" data-pile="pile4">{{ pile_values[3] }}</div>
+    </section>
+    <a href="/">Return to Main Menu</a>
+</body>
+</html>

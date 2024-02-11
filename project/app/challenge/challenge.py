@@ -11,13 +11,13 @@ class Pile:
         if self.direction == 'up':
             if card > self.top_card or card == self.top_card - 10:
                 self.top_card = card
-                self.played_cards.append(card)
+                # self.played_cards.append(card)
                 return True
         # If the card is smaller than the top card or exactly ten greater than the top card, play the card
         else:
             if card < self.top_card or card == self.top_card + 10:
                 self.top_card = card
-                self.played_cards.append(card)
+                # self.played_cards.append(card)
                 return True
         return False
     
@@ -35,14 +35,14 @@ class Pile:
 class UpwardPile(Pile):
     def __init__(self):
         self.name = 'UpwardPile'
-        self.top_card = 0
+        self.top_card = 1
         self.direction = 'up'
 
 class DownwardPile(Pile):
     def __init__(self):
         self.name = 'DownwardPile'
         self.top_card = 100
-        self.drection = 'down'
+        self.direction = 'down'
 
 class Hand:
     def __init__(self, max_cards) -> None:
@@ -52,21 +52,23 @@ class Hand:
 class Deck:
     def deal_cards(self):
         # If the hand size is smaller than 6 fill up to the hand max size
-        if len(self.hand.cards) <= self.hands.max_cards - 2:
+        if len(self.hand.cards) <= self.hand.max_cards - 2:
+            cards_to_draw = self.hand.max_cards - len(self.hand.cards)
             # Fill up to the max card amount
-            self.hand.cards = np.append(self.hand.cards, self.cards[:self.hand.max_cards - len(self.hand.cards)])
+            self.hand.cards = np.append(self.hand.cards, self.cards[:cards_to_draw])
             # Remove the cards from the deck
-            self.cards = self.cards[self.hand.max_cards - len(self.hand.cards):]
+            self.cards = self.cards[cards_to_draw:]
+            print(len(self.cards))
             # Sort the hand from min to max
             self.hand.cards = np.sort(self.hand.cards)
-            return self.hand.cards
+            return True
         return False
         
         
     def __init__(self):
         self.name = 'Deck'
         # Create random cards from 2 to 99
-        self.cards = np.random.randint(2, 100, 98)
+        self.cards = np.random.randint(2, 100, 98).astype(int)
 
         # Create Piles
         self.pile1 = UpwardPile()
@@ -95,6 +97,16 @@ class Deck:
         elif not self.check_possible_moves() and len(self.hand.cards) <= self.hand.max_cards - 2:
             return 'draw'
         return 'ongoing'
+    
+    def play_card(self, card, pile):
+        # If the card is in the hand and the pile is valid, play the card
+        if card in self.hand.cards and pile in ['pile1', 'pile2', 'pile3', 'pile4']:
+            # Play the card
+            if eval(f'self.{pile}.play_card(card)'):
+                # Remove the card from the hand
+                self.hand.cards = np.delete(self.hand.cards, np.where(self.hand.cards == card))
+                return True
+        return False
 
 class Challenge:
     def __init__(self):
