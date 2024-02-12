@@ -68,7 +68,9 @@ class Deck:
     def __init__(self):
         self.name = 'Deck'
         # Create random cards from 2 to 99
-        self.cards = np.random.randint(2, 100, 98).astype(int)
+        self.cards = np.arange(2, 100)
+        # Shuffle cards
+        np.random.shuffle(self.cards)
 
         # Create Piles
         self.pile1 = UpwardPile()

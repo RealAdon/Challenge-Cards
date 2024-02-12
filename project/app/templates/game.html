@@ -8,16 +8,13 @@
     <script src="{{ url_for('static', filename='js/game_actions.js') }}"></script>
 </head>
 <body>
-    <h2>Game State: {{ state }}</h2>
     <h3>Your Hand</h3>
     <section id="hand">
         {% for card in hand %}
             <div class="card" data-card="{{ card }}">{{ card }}</div>
         {% endfor %}
-        <div>
-            <button class="draw_cards_button">Draw Cards</button>
-        </div>
     </section>
+    <button class="draw_cards_button">Draw Cards</button>
     <h3>Piles</h3>
     <section id="piles">
         <div class="pile" data-pile="pile1">{{ pile_values[0] }}</div>

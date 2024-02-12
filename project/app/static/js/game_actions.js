@@ -1,57 +1,109 @@
-$(document).ready(function(){
+function checkStateOfChallenge() {
+    fetch('/check_state', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+       if (data.state == 'won') {
+            alert("You won the game!");
+            window.location.href = '/'; // Redirect to the home page
+        } else if (data.state == 'lost') {
+            alert("You lost the game!");
+            window.location.href = '/'; // Redirect to the home page
+        } else if (data.state == 'draw') {
+            // Highlight the draw cards button
+            document.querySelector('.draw_cards_button').style.backgroundColor = 'yellow';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Error checking challenge");
+    });
+
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
     let selectedCard = null;
 
     // Delegate card clicks from the #hand section
-    $('#hand').on('click', '.card', function() {
-        $(".card").removeClass('selected'); // Deselect any previously selected card
-        $(this).addClass('selected'); // Select this card
-        selectedCard = $(this).data('card');
+    document.getElementById('hand').addEventListener('click', function(event) {
+        if (event.target.classList.contains('card')) {
+            // Deselect any previously selected card
+            document.querySelectorAll('.card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+            // Select this card
+            event.target.classList.add('selected');
+            selectedCard = event.target.getAttribute('data-card');
+        }
     });
 
     // Delegate pile clicks from the #piles section
-    $('#piles').on('click', '.pile', function() {
-        if (selectedCard !== null) {
-            let pile = $(this).data('pile');
-            $.ajax({
-                url: '/play_card',
-                type: 'POST',
-                data: {card: selectedCard, pile: pile},
-                success: function(response){
-                    if (response.success) {
-                        $('.card.selected').remove(); // Remove the selected card from the hand
-                        $(`.pile[data-pile="${pile}"]`).text(selectedCard); // Update the text of the pile
-                        selectedCard = null; // Reset selectedCard
-                    } else {
-                        alert("Move not allowed");
-                    }
+    document.getElementById('piles').addEventListener('click', function(event) {
+        if (event.target.classList.contains('pile') && selectedCard !== null) {
+            let pile = event.target.getAttribute('data-pile');
+            fetch('/play_card', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `card=${selectedCard}&pile=${pile}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the selected card from the hand
+                    document.querySelector('.card.selected').remove();
+                    // Update the text of the pile
+                    event.target.textContent = selectedCard;
+                    selectedCard = null; // Reset selectedCard
+                    // Check the state of the challenge
+                    checkStateOfChallenge();
+                } else {
+                    // Highlight a red border around the pile for 1 second then have it fade out
+                    event.target.style.border = '2px solid red';
+                    setTimeout(function() {
+                        event.target.style.border = '';
+                    }, 1000);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error playing card");
             });
         }
     });
+
     // Handler for the Draw Cards button
-    $(".draw_cards_button").click(function() {
-        $.ajax({
-            url: '/draw_cards',
-            type: 'GET',
-            success: function(response) {
-                // Assuming the response contains the updated hand
-                if(response.success) {
-                    // Update the hand display based on the response
-                    // This part requires you to adjust based on how you want to display the updated hand
-                    $('#hand').empty(); // Clear current hand display
-                    response.hand.forEach(function(card) {
-                        // Append each new card to the hand display
-                        $('#hand').append('<div class="card" data-card="' + card + '">' + card + '</div>');
-                    });
-                    // Re-bind click event to new card elements if necessary
-                } else {
-                    alert("Could not draw cards");
-                }
-            },
-            error: function(xhr, status, error) {
-                // Handle any errors here
-                console.error("Error drawing cards: ", status, error);
+    document.querySelector('.draw_cards_button').addEventListener('click', function() {
+        fetch('/draw_cards', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the hand display based on the response
+                let hand = document.getElementById('hand');
+                hand.innerHTML = ''; // Clear current hand display
+                data.hand.forEach(function(card) {
+                    let cardDiv = document.createElement('div');
+                    cardDiv.classList.add('card');
+                    cardDiv.setAttribute('data-card', card);
+                    cardDiv.textContent = card;
+                    hand.appendChild(cardDiv);
+                });
+                // remove the highlight from the draw cards button
+                document.querySelector('.draw_cards_button').style.backgroundColor = '';
+                // check the state of the challenge
+                checkStateOfChallenge();
+            } else {
+                alert("Could not draw cards");
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Error drawing cards");
         });
     });
 });

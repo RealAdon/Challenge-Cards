@@ -28,17 +28,22 @@ def play_card():
     return jsonify(success=success)
 
 
-@app.route('/game_state', methods=['GET'])
+@app.route('/game', methods=['GET'])
 def game_state():
-    state = game.deck.check_state_of_challenge()
     # Pass the necessary game state information to your template
     pile_values = [x.top_card for x in [game.deck.pile1, game.deck.pile2, game.deck.pile3, game.deck.pile4]]
     hand = [int(x) for x in game.deck.hand.cards]
-    return render_template('game_state.html', state=state, hand=hand, pile_values=pile_values)
+    return render_template('game.html', hand=hand, pile_values=pile_values)
+
+@app.route('/check_state', methods=['GET'])
+def check_state():
+    state = game.deck.check_state_of_challenge()
+    return jsonify(state=state)
 
 @app.route('/draw_cards', methods=['GET'])
 def draw_cards():
     cards_drawn = game.deck.deal_cards()
+    print(cards_drawn)
     if cards_drawn:
         hand = [int(x) for x in game.deck.hand.cards]
         return jsonify(success=cards_drawn, hand=hand)
