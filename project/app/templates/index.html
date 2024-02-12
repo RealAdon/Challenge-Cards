@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Card Game</title>
+    <title>Challenge Cards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Card Game</h1>
-    <form action="/start" method="get">
-        <button type="submit">Start New Game</button>
+    <h1>Are you up for the Challenge?</h1>
+    <form class="center-container" action="/start" method="get">
+        <button class="start-button" type="submit">Start</button>
     </form>
 </body>
 </html>

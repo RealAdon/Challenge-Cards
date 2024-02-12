@@ -58,7 +58,6 @@ class Deck:
             self.hand.cards = np.append(self.hand.cards, self.cards[:cards_to_draw])
             # Remove the cards from the deck
             self.cards = self.cards[cards_to_draw:]
-            print(len(self.cards))
             # Sort the hand from min to max
             self.hand.cards = np.sort(self.hand.cards)
             return True
@@ -67,7 +66,7 @@ class Deck:
         
     def __init__(self):
         self.name = 'Deck'
-        # Create random cards from 2 to 99
+        # Create random cards from 2 to 98
         self.cards = np.arange(2, 100)
         # Shuffle cards
         np.random.shuffle(self.cards)

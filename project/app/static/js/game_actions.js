@@ -12,7 +12,7 @@ function checkStateOfChallenge() {
             window.location.href = '/'; // Redirect to the home page
         } else if (data.state == 'draw') {
             // Highlight the draw cards button
-            document.querySelector('.draw_cards_button').style.backgroundColor = 'yellow';
+            document.getElementById('deck').style.backgroundColor = '';
         }
     })
     .catch(error => {
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     checkStateOfChallenge();
                 } else {
                     // Highlight a red border around the pile for 1 second then have it fade out
-                    event.target.style.border = '2px solid red';
+                    event.target.style.border = '5px solid red';
                     setTimeout(function() {
                         event.target.style.border = '';
                     }, 1000);
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handler for the Draw Cards button
-    document.querySelector('.draw_cards_button').addEventListener('click', function() {
+    document.getElementById('deck').addEventListener('click', function(event) {
         fetch('/draw_cards', {
             method: 'GET'
         })
@@ -94,11 +94,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     hand.appendChild(cardDiv);
                 });
                 // remove the highlight from the draw cards button
-                document.querySelector('.draw_cards_button').style.backgroundColor = '';
+                document.getElementById('deck').style.backgroundColor = '';
+                // Update the remaining Cards value of the deck
+                document.getElementById('deck').textContent = "Deck " + data.remainig_cards;
                 // check the state of the challenge
                 checkStateOfChallenge();
             } else {
-                alert("Could not draw cards");
+                event.target.style.border = '5px solid red';
+                    setTimeout(function() {
+                        event.target.style.border = '';
+                    }, 1000);
             }
         })
         .catch(error => {

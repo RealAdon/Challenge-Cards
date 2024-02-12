@@ -46,7 +46,7 @@ def draw_cards():
     print(cards_drawn)
     if cards_drawn:
         hand = [int(x) for x in game.deck.hand.cards]
-        return jsonify(success=cards_drawn, hand=hand)
+        return jsonify(success=cards_drawn, hand=hand, remainig_cards=len(game.deck.cards))
     return jsonify(success=bool(cards_drawn))
 
 
